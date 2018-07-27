@@ -7,6 +7,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 
+const User = require('./models/User');
+
 app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
@@ -16,6 +18,24 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
+});
+
+app.post('/api/exercise/new-user', (req, res, next) => {
+  console.log(req.body);
+  const user = new User();
+  user.username = req.body.username;
+  user.save((err, result) => {
+    if (err) return next(err);
+    res.json({
+      username: result.username,
+      _id: result._id
+    });
+  });
+});
+
+app.post('/api/exercise/add', (req, res) => {
+  console.log(req.body);
+  res.end();
 });
 
 
